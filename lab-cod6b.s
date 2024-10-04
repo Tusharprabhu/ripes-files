@@ -1,38 +1,37 @@
 .data
-a:  .word 2 5 7 3 8 6 9 1 4 15
-b:  .word 5 3 8 4 7 9 2 17 6 1
-c:  .zero 10*4
+array:.word 5 2 3 4 1
+size:.word 5
+
 .text
-    la   x10, a
-    la   x11, b
-    la   x12, c
-    li   x13, 0
-loop:
-    li   x14, 10
-    bge  x13, x14, end 
-    slli x15, x13, 2
-    add  x16, x12, x15
-    addi x17, x15, -4
-    add  x18, x12, x17
-    lw   x19, 0(x10)
-    lw   x20, 0(x11)
-    beq  x13, x0,sol
-    lw   x21, 0(x18)
-    mul  x22, x19, x20
-    add  x22, x22, x21
-    sw   x22, 0(x16)
-    j increment
-sol:
-    li   x21, 0
-    mul  x22, x19, x20
-    add  x22, x22, x21
-    sw   x22, 0(x16)
+    la x1, size
+    lw x2, 0(x1)
+    li x3, 0
 
-increment:
-    addi x13, x13, 1
-    addi x10, x10, 4
-    addi x11, x11, 4
-    j loop
+outerloop:
+    addi x4, x2, -1
+    bge x3, x4, done
+    li x5, 0
+innerloop:
+    addi x6, x2, -1
+    sub x6, x6, x3
+    blt x5, x6, compare
+    j inndone
+compare:
+    la x7, array
+    slli x8, x5, 2
+    add x11, x7, x8
+    lw x9, 0(x11)
+    lw x10, 4(x11)
+    bgt x9, x10, skip
+    sw x10, 0(x11)
+    sw x9, 4(x11)
+skip:
+    addi x5, x5, 1
+    j innerloop
 
-end:
+inndone:
+    addi x3, x3, 1
+    j outerloop
+
+done:
     nop
